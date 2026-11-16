@@ -1,0 +1,63 @@
+{
+  "label": "SYNTHETIC - every record is simulated. Not real college student data.",
+  "generator": "core/synthetic.py",
+  "generator_version": "1.0",
+  "created_utc": "2026-11-11T19:02:52+00:00",
+  "seed": 2026,
+  "n_students": 600,
+  "n_events": 48,
+  "rows": 783,
+  "intercept": 0.1229,
+  "mean_true_probability": 0.68,
+  "class_balance": {
+    "0": 255,
+    "1": 528
+  },
+  "based_on": "Rules documented in the original workbook's Generation_Log, sections 5-10 (original generate_ml_dataset.py was not available).",
+  "choices_not_in_documentation": [
+    "Year mix 80/10/8/2 %",
+    "Volunteer share 0.49",
+    "Area mix for 'Did not apply' = overall survey mix",
+    "Registrations per student 72/22/4/1.5/0.5 %",
+    "Day and time weights per event type",
+    "Duration ranges per event type",
+    "Department-to-event-type fit",
+    "Engagement stretch of registration lead time = x(1 + 0.01*(score-60))",
+    "8% of events have no forecast ('Unavailable')",
+    "Popularity clipped to 20-95",
+    "Exam-week events = 25% of events"
+  ],
+  "target_coefficients": {
+    "prev_rate_z": 0.7,
+    "log1p_prev_attended": 0.31,
+    "volunteer": 0.63,
+    "participated": 0.48,
+    "experience_num": 0.24,
+    "engagement_c": 0.019,
+    "popularity_z": 0.94,
+    "area_match": 1.25,
+    "role_match": 0.55,
+    "reg_last_minute": -1.25,
+    "reg_normal": 0.24,
+    "reg_very_early": -0.55,
+    "exam_near": -1.88,
+    "distance_over5": -0.15,
+    "distance_over12": -0.94,
+    "evening": -0.48,
+    "saturday": -0.48,
+    "rainy": -0.94,
+    "cloudy": -0.15,
+    "duration_c": -0.39,
+    "year_c": -0.13
+  },
+  "student_effect_sd": 0.5,
+  "missing_values": {
+    "Previous_Events_Registered": 31,
+    "Previous_Attendance_Rate": 31,
+    "Academic_Engagement_Score": 34,
+    "Event_Popularity": 23,
+    "Distance_From_Venue_KM": 39,
+    "Distance_Category": 39
+  },
+  "weather_forecast": "Event-level forecast; 'Unavailable' for events without one. forecast_obtained_at is not simulated (null)."
+}

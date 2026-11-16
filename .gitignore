@@ -1,0 +1,33 @@
+# Environments
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+
+# MLflow: run artifacts stay local; mlflow.db (run history) IS committed
+mlruns/
+mlartifacts/
+model_tmp/
+
+# Runtime output
+logs/
+reports/
+exports/
+database/
+
+# Desktop app: build products and its local model registry (trained on the mid-term data)
+build/
+dist/
+release/
+*.app/
+*.dmg
+models/
+_to_delete/
+
+# Mid-term reference data: derived from a real student survey - not published
+data/original/
+data/processed/
+
+.DS_Store

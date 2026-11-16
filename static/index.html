@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EventPulse AI — Attendance prediction</title>
+<link rel="icon" href="/static/logo.png">
+<style>
+  :root{--cream:#F8F6F2;--surface:#fff;--lav:#F0EDFA;--purple:#6956A5;--purple-h:#5B4895;--blue:#DCE8F8;
+        --gold:#E9BC65;--gold-soft:#FBF1DC;--ink:#29263A;--ink2:#57526B;--muted:#8A859C;--border:#EBE7EF;
+        --good:#2E7D5B;--good-soft:#E3F2EA;--bad:#B3423A;--bad-soft:#F8E4E1;--amber:#C47F14}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif}
+  header{display:flex;align-items:center;gap:14px;padding:18px 32px;background:var(--surface);border-bottom:1px solid var(--border)}
+  header img{width:42px;height:42px;border-radius:10px}
+  header h1{font-size:19px;margin:0}
+  header .tag{color:var(--muted);font-size:13px}
+  header nav{margin-left:auto;display:flex;gap:16px;font-size:14px}
+  header nav a{color:var(--purple);text-decoration:none;font-weight:600}
+  main{max-width:1240px;margin:0 auto;padding:24px 32px 48px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(320px,1fr);gap:24px}
+  @media (max-width:980px){main{grid-template-columns:1fr;padding:20px}}
+  .notice{grid-column:1/-1;background:var(--gold-soft);border:1px solid #F1DDAE;border-radius:12px;padding:10px 14px;font-size:13.5px;color:#6B4E12}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+  .eyebrow{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);font-weight:700;margin:0 0 4px}
+  h2{font-size:17px;margin:0 0 14px}
+  fieldset{border:0;padding:0;margin:0 0 18px}
+  legend{font-weight:650;font-size:14px;margin-bottom:10px;color:var(--ink2)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px 16px}
+  label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink2)}
+  label small{color:var(--muted);font-size:11.5px}
+  input,select{font:inherit;color:var(--ink);background:#FDFCFA;border:1px solid #DCD7E3;border-radius:9px;padding:8px 10px;min-width:0}
+  input:focus,select:focus{outline:2px solid var(--lav);border-color:var(--purple)}
+  .err{border-color:var(--bad);background:var(--bad-soft)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  button{font:inherit;font-weight:650;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid transparent}
+  .primary{background:var(--purple);color:#fff}.primary:hover{background:var(--purple-h)}
+  .ghost{background:var(--lav);color:var(--purple)}
+  .result-empty{color:var(--muted)}
+  .verdict{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .badge{font-weight:700;border-radius:999px;padding:5px 12px;font-size:13px}
+  .yes{background:var(--good-soft);color:var(--good)}.no{background:var(--gold-soft);color:#8A5A07}
+  .big{font-size:40px;font-weight:750;letter-spacing:-.02em}
+  .bar{position:relative;height:12px;background:var(--lav);border-radius:6px;margin:6px 0 4px}
+  .bar span{position:absolute;inset:0 auto 0 0;background:var(--purple);border-radius:6px}
+  .bar i{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+  .scale{display:flex;justify-content:space-between;color:var(--muted);font-size:11.5px}
+  h3{font-size:14px;margin:18px 0 8px}
+  ul{margin:0;padding-left:18px}li{margin:4px 0}
+  .factor{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+  .up{color:var(--good);font-weight:650}.down{color:var(--bad);font-weight:650}
+  .errors{background:var(--bad-soft);border:1px solid #EDC5BF;color:#7A2A23;border-radius:10px;padding:10px 14px;font-size:13.5px}
+  .meta{font-size:12.5px;color:var(--muted);margin-top:14px}
+  code{background:var(--lav);padding:1px 5px;border-radius:5px;font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+  <img src="/static/logo.png" alt="">
+  <div><h1>EventPulse AI</h1><div class="tag">Predict. Plan. Participate. — attendance prediction</div></div>
+  <nav><a href="/docs">API docs</a><a href="/health">Health</a></nav>
+</header>
+<main>
+  <div class="notice" id="notice"><b>Simulated labels.</b> The model is trained on a synthetic dataset whose
+    attendance outcomes are simulated from documented rules. Predictions show the learned pattern, not verified
+    real-world attendance.</div>
+
+  <section class="card">
+    <p class="eyebrow">Step 1</p><h2>Describe the registration</h2>
+    <form id="form" novalidate></form>
+    <div class="actions">
+      <button class="primary" id="go" type="button">Predict attendance</button>
+      <button class="ghost" id="weak" type="button">Load a weak example</button>
+      <button class="ghost" id="bad" type="button">Send an invalid value (Year = 9)</button>
+    </div>
+  </section>
+
+  <section class="card" id="result" aria-live="polite">
+    <p class="eyebrow">Step 2</p><h2>Prediction</h2>
+    <p class="result-empty">Fill in the form and press <b>Predict attendance</b>.</p>
+  </section>
+</main>
+<script>
+const GROUPS = [
+  ["Student", ["Course","Year","Currently_UBA_Volunteer","Participated_UBA_Event_Before","Experience_Level","Area_Of_Interest","Role"]],
+  ["Event", ["Event_Type","Event_Day","Event_Time","Event_Duration_Hours","Event_Popularity","Weather_Forecast"]],
+  ["Registration & history", ["Registration_Days_Before","Previous_Event_Attendance","Previous_Events_Registered","Previous_Attendance_Rate","Academic_Engagement_Score","Distance_From_Venue_KM","Has_Exam_Near_Event"]],
+];
+const EXAMPLE = {Course:"B.Tech CSE",Year:2,Currently_UBA_Volunteer:1,Participated_UBA_Event_Before:1,Experience_Level:"Some experience",
+  Area_Of_Interest:"Problem Solving & Decision Making",Role:"Content",Event_Type:"Workshop",Event_Day:"Wednesday",Event_Time:"Morning",
+  Event_Duration_Hours:2,Registration_Days_Before:5,Previous_Event_Attendance:4,Previous_Events_Registered:5,Previous_Attendance_Rate:"",
+  Academic_Engagement_Score:72,Event_Popularity:70,Distance_From_Venue_KM:3.5,Has_Exam_Near_Event:0,Weather_Forecast:"Clear"};
+const WEAK = Object.assign({}, EXAMPLE, {Currently_UBA_Volunteer:0,Participated_UBA_Event_Before:0,Experience_Level:"No experience",
+  Area_Of_Interest:"Not Sure Yet",Previous_Event_Attendance:1,Previous_Events_Registered:6,Event_Popularity:30,Distance_From_Venue_KM:18,
+  Has_Exam_Near_Event:1,Weather_Forecast:"Rainy",Registration_Days_Before:0,Event_Time:"Evening"});
+const FLAGS = {Currently_UBA_Volunteer:1,Participated_UBA_Event_Before:1,Has_Exam_Near_Event:1};
+let FIELDS = {};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function control(f){
+  const id = "f_" + f.name;
+  const blank = f.name === "Previous_Attendance_Rate" ? " · blank = computed" : " · blank = unknown";
+  const hint = f.min != null ? `${f.min} – ${f.max}${f.required ? "" : blank}` : (f.required ? "" : "optional");
+  let input;
+  if (f.options) {
+    const opts = f.options.map(o => `<option value="${esc(o)}">${FLAGS[f.name] ? (o ? "Yes" : "No") : esc(o)}</option>`).join("");
+    input = `<select id="${id}" name="${f.name}">${opts}</select>`;
+  } else {
+    const step = f.type === "integer" ? "1" : "0.1";
+    input = `<input id="${id}" name="${f.name}" type="number" step="${step}" min="${f.min}" max="${f.max}">`;
+  }
+  return `<label for="${id}">${esc(f.label)}${input}<small>${esc(hint)}</small></label>`;
+}
+
+function fill(values){
+  for (const [k,v] of Object.entries(values)) { const el = document.getElementById("f_"+k); if (el) el.value = v; }
+}
+
+function payload(){
+  const out = {};
+  for (const f of Object.values(FIELDS)) {
+    const el = document.getElementById("f_"+f.name); el.classList.remove("err");
+    let v = el.value;
+    if (v === "") { if (!f.required) out[f.name] = null; continue; }
+    if (f.options) { out[f.name] = typeof f.options[0] === "number" ? Number(v) : v; }
+    else out[f.name] = f.type === "integer" && /^-?\d+$/.test(v) ? parseInt(v, 10) : Number(v);
+  }
+  return out;
+}
+
+function showErrors(detail){
+  const items = (Array.isArray(detail) ? detail : [{msg: String(detail)}]).map(d => {
+    const field = (d.loc || []).filter(x => x !== "body").join(".");
+    if (field) { const el = document.getElementById("f_"+field); if (el) el.classList.add("err"); }
+    return `<li>${field ? `<b>${esc(FIELDS[field]?.label || field)}</b>: ` : ""}${esc(d.msg)}</li>`;
+  }).join("");
+  $("#result").innerHTML = `<p class="eyebrow">Step 2</p><h2>Input rejected (HTTP 422)</h2>
+    <div class="errors"><ul>${items}</ul></div>
+    <p class="meta">The API validates every field against the data contract before the model is called.</p>`;
+}
+
+function showResult(r){
+  const pct = (r.probability*100).toFixed(1), thr = (r.threshold*100).toFixed(0);
+  const shown = r.probability < 0.0005 ? "&lt;0.1" : r.probability > 0.9995 ? "&gt;99.9" : pct;
+  const factors = r.factors.map(f => `<div class="factor"><span>${esc(f.label)} = <b>${esc(f.value)}</b>
+     <small style="color:var(--muted)">(typical ${esc(f.typical)})</small></span>
+     <span class="${f.effect>0?"up":"down"}">${f.effect>0?"+":"−"}${Math.abs(f.effect*100).toFixed(1)} pts</span></div>`).join("");
+  $("#result").innerHTML = `<p class="eyebrow">Step 2</p><h2>Prediction</h2>
+    <div class="verdict"><span class="big">${shown}%</span>
+      <span class="badge ${r.will_attend?"yes":"no"}">${esc(r.label)}</span></div>
+    <div class="bar"><span style="width:${pct}%"></span><i style="left:${thr}%" title="decision threshold"></i></div>
+    <div class="scale"><span>0%</span><span>threshold ${thr}%</span><span>100%</span></div>
+    <p class="meta" style="margin-top:6px">Certainty: <b>${esc(r.certainty)}</b> (distance from the threshold)</p>
+    <h3>Tips for the organiser</h3><ul>${r.tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
+    <h3>What moved this prediction</h3>${factors || '<p class="meta">No single input moves the probability by 0.5 points or more on its own (the prediction is far from the threshold).</p>'}
+    <p class="meta">“What moved” replaces each input by its typical training value and reports the change in
+      probability — a model sensitivity check, not a cause. Model: ${esc(r.model)}.</p>`;
+}
+
+async function predict(body){
+  $("#go").disabled = true;
+  try {
+    const res = await fetch("/predict", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)});
+    const data = await res.json();
+    if (res.status === 422) showErrors(data.detail);
+    else if (!res.ok) showErrors(data.detail || `HTTP ${res.status}`);
+    else showResult(data);
+  } catch (e) { showErrors("Could not reach the API: " + e); }
+  finally { $("#go").disabled = false; }
+}
+
+(async function init(){
+  const info = await (await fetch("/model-info")).json();
+  for (const f of info.fields) FIELDS[f.name] = f;
+  $("#form").innerHTML = GROUPS.map(([title, names]) =>
+    `<fieldset><legend>${title}</legend><div class="grid">${names.map(n => control(FIELDS[n])).join("")}</div></fieldset>`).join("");
+  fill(EXAMPLE);
+  $("#notice").insertAdjacentHTML("beforeend", ` <span>Model: <b>${esc(info.model)}</b>, cross-validated ROC-AUC
+    ${info.cv_roc_auc ? info.cv_roc_auc.toFixed(3) : "–"} on ${info.training_rows} synthetic rows.</span>`);
+  $("#go").onclick = () => predict(payload());
+  $("#weak").onclick = () => { fill(WEAK); predict(payload()); };
+  $("#bad").onclick = () => { $("#f_Year").value = 9; predict(payload()); };
+})();
+</script>
+</body>
+</html>

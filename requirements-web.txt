@@ -1,0 +1,46 @@
+# EventPulse AI - WEB APPLICATION runtime (webapp/server.py: FastAPI + React build + PostgreSQL).
+#
+# Separate from the other requirement files, which are NOT changed by this file:
+#   requirements.txt          full development / training environment (CSL236)
+#   requirements-desktop.txt  desktop app (PySide6)
+#   requirements-serve.txt    CSL236 prediction API image (app.py)
+#
+# Pinned to the exact versions installed in the project's verified .venv (Python 3.12.8,
+# Mac suite of 16 Nov 2026), plus psycopg 3.3.9 (verified against PostgreSQL 16 in Phase 2).
+# Not installed anywhere yet. Install only into a SEPARATE environment, never the desktop .venv:
+#   python3.12 -m venv .venv-web && .venv-web/bin/pip install -r requirements-web.txt
+#
+# The web app uses SQLite unless EVENTPULSE_DB_URL is set to a postgresql:// URL.
+# Saved models are tied to the scikit-learn version below: do not change it on its own.
+
+# --- web server
+fastapi==0.162.5
+starlette==1.10.0
+pydantic==2.14.3
+pydantic-core==2.50.4
+uvicorn==0.54.0
+python-multipart==0.0.33        # form posts: QR check-in page, CSV uploads
+
+# --- PostgreSQL driver (used only with an explicit EVENTPULSE_DB_URL)
+psycopg==3.3.9
+psycopg-binary==3.3.9
+
+# --- ML inference (models in models/ and model/ were saved with scikit-learn 1.9.1)
+scikit-learn==1.9.1
+scipy==1.18.1
+numpy==2.5.4
+pandas==3.1.1
+joblib==1.6.0
+threadpoolctl==3.8.0
+
+# --- reports, exports, QR images
+reportlab==5.1.0
+openpyxl==3.1.5
+matplotlib==3.11.2
+pillow==13.0.0
+segno==1.6.6
+
+# Not included on purpose:
+#   argon2-cffi  - not installed in the verified .venv; passwords are hashed with the standard
+#                  library's scrypt. Adding it would change how NEW passwords are hashed.
+#   mlflow, PySide6, pytest, httpx - training, desktop and test tools, not needed to serve the web app.
