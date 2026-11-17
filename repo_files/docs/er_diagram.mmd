@@ -1,0 +1,216 @@
+erDiagram
+    app_settings {
+        TEXT key PK
+        TEXT value
+        TEXT updated_utc
+    }
+    attendance_records {
+        INTEGER attendance_id PK
+        INTEGER registration_id FK,UK
+        INTEGER attended
+        TEXT source
+        TEXT recorded_by
+        TEXT recorded_utc
+        TEXT notes
+    }
+    audit_log {
+        INTEGER log_id PK
+        TEXT ts_utc
+        TEXT action
+        TEXT entity
+        TEXT entity_id
+        TEXT details
+    }
+    courses {
+        INTEGER course_id PK
+        TEXT name UK
+        TEXT department
+    }
+    datasets {
+        INTEGER dataset_id PK
+        TEXT name
+        TEXT kind UK
+        TEXT file_name
+        TEXT source_sheet
+        TEXT sha256 UK
+        INTEGER row_count
+        TEXT imported_utc
+        TEXT notes
+    }
+    event_outcomes {
+        TEXT event_id PK,FK
+        TEXT method
+        INTEGER actual_attendees
+        INTEGER walk_ins
+        TEXT recorded_by
+        TEXT recorded_utc
+        TEXT notes
+    }
+    events {
+        TEXT event_id PK
+        TEXT name
+        TEXT event_type
+        TEXT event_date
+        TEXT event_day
+        TEXT start_time
+        TEXT time_slot
+        REAL duration_hours
+        TEXT venue
+        INTEGER capacity
+        REAL popularity
+        TEXT status
+        TEXT data_source
+        INTEGER dataset_id FK
+        TEXT created_utc
+        TEXT updated_utc
+    }
+    model_metrics {
+        INTEGER metric_id PK
+        INTEGER model_version_id FK,UK
+        TEXT evaluation_set UK
+        TEXT metric UK
+        REAL value
+        REAL std
+        INTEGER n
+    }
+    model_versions {
+        INTEGER model_version_id PK
+        TEXT model_key UK
+        INTEGER version UK
+        TEXT name
+        TEXT algorithm
+        INTEGER is_baseline
+        INTEGER is_active
+        TEXT artifact_path
+        TEXT artifact_sha256 UK
+        REAL threshold
+        TEXT hyperparameters
+        INTEGER training_dataset_id FK
+        TEXT training_data_label
+        TEXT training_data_sha256
+        TEXT sklearn_version
+        TEXT python_version
+        TEXT trained_utc
+        TEXT registered_utc
+        TEXT notes
+    }
+    prediction_evaluation_items {
+        INTEGER evaluation_id PK,FK
+        INTEGER prediction_id PK,FK
+        INTEGER attendance_id FK
+    }
+    prediction_evaluations {
+        INTEGER evaluation_id PK
+        TEXT event_id FK
+        INTEGER model_version_id FK
+        TEXT computed_utc
+        TEXT method
+        INTEGER registrations_evaluated
+        REAL expected_attendance
+        INTEGER predicted_attendees
+        INTEGER actual_attendees
+        REAL error
+        REAL absolute_error
+        REAL percentage_error
+        INTEGER count_error
+        REAL accuracy
+        REAL balanced_accuracy
+        REAL brier
+        REAL roc_auc
+        INTEGER tn
+        INTEGER fp
+        INTEGER fn
+        INTEGER tp
+        INTEGER target_is_simulated
+        TEXT notes
+    }
+    prediction_runs {
+        INTEGER run_id PK
+        INTEGER model_version_id FK
+        TEXT run_type
+        TEXT event_id FK
+        INTEGER input_dataset_id FK
+        INTEGER n_predictions
+        TEXT created_utc
+        TEXT notes
+    }
+    predictions {
+        INTEGER prediction_id PK
+        INTEGER run_id FK
+        INTEGER model_version_id FK
+        INTEGER registration_id FK
+        INTEGER forecast_id FK
+        TEXT student_ref
+        TEXT event_ref
+        REAL probability
+        INTEGER predicted_attend
+        REAL threshold
+        TEXT certainty
+        TEXT forecast_used
+        TEXT input_snapshot
+        TEXT predicted_utc
+    }
+    registrations {
+        INTEGER registration_id PK
+        TEXT student_id FK,UK
+        TEXT event_id FK,UK
+        TEXT registered_on
+        INTEGER registration_days_before
+        INTEGER has_exam_near_event
+        TEXT status
+        TEXT data_source
+        INTEGER dataset_id FK
+        TEXT created_utc
+        TEXT updated_utc
+    }
+    students {
+        TEXT student_id PK
+        INTEGER course_id FK
+        INTEGER year
+        INTEGER currently_uba_volunteer
+        INTEGER participated_uba_event_before
+        TEXT experience_level
+        TEXT area_of_interest
+        TEXT role
+        INTEGER previous_event_attendance
+        INTEGER previous_events_registered
+        REAL previous_attendance_rate
+        REAL academic_engagement_score
+        REAL distance_from_venue_km
+        TEXT data_source
+        INTEGER dataset_id FK
+        TEXT created_utc
+        TEXT updated_utc
+    }
+    weather_forecasts {
+        INTEGER forecast_id PK
+        TEXT event_id FK
+        TEXT forecast
+        TEXT forecast_obtained_at
+        TEXT source
+        TEXT recorded_utc
+        TEXT notes
+    }
+    registrations ||--o| attendance_records : "registration_id"
+    events ||--o| event_outcomes : "event_id"
+    datasets |o--o{ events : "dataset_id"
+    model_versions ||--o{ model_metrics : "model_version_id"
+    datasets |o--o{ model_versions : "training_dataset_id"
+    attendance_records |o--o{ prediction_evaluation_items : "attendance_id"
+    predictions ||--o{ prediction_evaluation_items : "prediction_id"
+    prediction_evaluations ||--o{ prediction_evaluation_items : "evaluation_id"
+    model_versions ||--o{ prediction_evaluations : "model_version_id"
+    events ||--o{ prediction_evaluations : "event_id"
+    datasets |o--o{ prediction_runs : "input_dataset_id"
+    events |o--o{ prediction_runs : "event_id"
+    model_versions ||--o{ prediction_runs : "model_version_id"
+    weather_forecasts |o--o{ predictions : "forecast_id"
+    registrations |o--o{ predictions : "registration_id"
+    model_versions ||--o{ predictions : "model_version_id"
+    prediction_runs ||--o{ predictions : "run_id"
+    datasets |o--o{ registrations : "dataset_id"
+    events ||--o{ registrations : "event_id"
+    students ||--o{ registrations : "student_id"
+    datasets |o--o{ students : "dataset_id"
+    courses ||--o{ students : "course_id"
+    events ||--o{ weather_forecasts : "event_id"

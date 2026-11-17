@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+rootdir: /home/claude/EventPulseAI
+plugins: platformdirs-4.13.5, anyio-4.15.1
+collecting ... collected 7 items
+
+tests/test_training.py::test_historical_result_reproduced_exactly PASSED [ 14%]
+tests/test_training.py::test_grouped_holdout_has_no_student_overlap PASSED [ 28%]
+tests/test_training.py::test_training_run_outputs PASSED                 [ 42%]
+tests/test_training.py::test_recommendation_uses_cv_only PASSED          [ 57%]
+tests/test_training.py::test_training_rejects_invalid_data PASSED        [ 71%]
+tests/test_training.py::test_metrics_and_baseline PASSED                 [ 85%]
+tests/test_training.py::test_threshold_and_interval PASSED               [100%]
+REAL DATA GUARD: 426 files under database/ and models/ unchanged (size, mtime, SHA-256).
+
+============================== 7 passed in 37.93s ==============================

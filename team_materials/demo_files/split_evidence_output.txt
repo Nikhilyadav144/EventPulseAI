@@ -1,0 +1,24 @@
+========================================================================
+EventPulse AI - train/test split evidence (synthetic data only)
+========================================================================
+Dataset: 783 registrations, 600 students, attend rate 67.4% (target is SIMULATED)
+
+PART A - the split actually used (core.model_training.grouped_holdout_split)
+  Train: 626 rows / 484 students (79.9%), attend rate 67.4%
+  Test : 157 rows / 116 students (20.1%), attend rate 67.5%
+  Students in BOTH train and test: 0  -> PASS (no leakage)
+  Rows add up: 626 + 157 = 783 -> PASS
+
+PART B - 90:10 vs 80:20 vs 67:33 (~70:30) (10 student-grouped splits each, same model)
+  Split   Train rows Test rows  AUC mean  AUC spread  Acc mean  Acc spread
+  90:10          704        79     0.885   0.812-0.940     80.8%   74.7%-88.6%
+  80:20          626       157     0.856   0.819-0.879     80.1%   76.4%-84.7%
+  67:33          522       261     0.865   0.811-0.908     81.8%   79.4%-85.1%
+
+How to read Part B:
+  * 'spread' = lowest-highest result over 10 different splits.
+  * 90:10 tests on only ~79 rows, so its result swings the most (least reliable).
+  * 80:20 and 67:33 give similar, stable results; neither is clearly better.
+  * 80:20 keeps more rows for training while still testing on ~157 rows,
+    so it is a reasonable, standard choice - not a tuned 'best' ratio.
+  * Model choice itself used 5-fold group cross-validation on the training part only.

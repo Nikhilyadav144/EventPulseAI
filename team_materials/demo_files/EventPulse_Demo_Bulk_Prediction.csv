@@ -1,0 +1,11 @@
+Course,Year,Currently_UBA_Volunteer,Participated_UBA_Event_Before,Experience_Level,Area_Of_Interest,Role,Event_Type,Event_Day,Event_Time,Event_Duration_Hours,Registration_Days_Before,Previous_Event_Attendance,Previous_Events_Registered,Previous_Attendance_Rate,Academic_Engagement_Score,Event_Popularity,Distance_From_Venue_KM,Has_Exam_Near_Event,Weather_Forecast
+B.Tech CSE,3,1,1,Experienced,Problem Solving & Decision Making,Graphics/Creativity,Workshop,Friday,Afternoon,2,10,8,8,100,88,70,1.5,0,Clear
+BCA,2,1,1,Some experience,Awareness & Communication,Content,Workshop,Friday,Afternoon,2,7,5,6,83,75,70,3.0,0,Clear
+B.Tech Robotics & AI,2,0,1,Some experience,Problem Solving & Decision Making,Did not apply,Workshop,Friday,Afternoon,2,5,4,5,80,70,70,4.0,0,Clear
+BBA,1,0,0,No experience,Not Sure Yet,Did not apply,Workshop,Friday,Afternoon,2,3,1,2,50,60,70,6.0,0,Clear
+BA (Hons) Psychology,2,1,0,Some experience,Community & Social Work,Social Media,Workshop,Friday,Afternoon,2,2,3,5,60,65,70,8.0,1,Clear
+B.Com (Hons),3,0,0,No experience,Team Activities & Challenges,Did not apply,Workshop,Friday,Afternoon,2,1,1,4,25,48,70,12.0,1,Clear
+BBA LLB (Hons),4,0,1,Some experience,Awareness & Communication,Content,Workshop,Friday,Afternoon,2,0,3,6,50,55,70,15.0,1,Clear
+MCA,1,0,0,No experience,Not Sure Yet,Did not apply,Workshop,Friday,Afternoon,2,0,0,3,0,40,70,20.0,1,Clear
+B.Tech ECE,2,1,1,Experienced,Problem Solving & Decision Making,Multiple teams,Workshop,Friday,Afternoon,2,14,6,7,86,80,70,2.0,0,Clear
+BBA Business Analytics,2,0,0,Some experience,Problem Solving & Decision Making,Did not apply,Workshop,Friday,Afternoon,2,4,2,3,67,62,70,5.0,0,Clear
